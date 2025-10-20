@@ -7,14 +7,9 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // -------------------- CORS Setup --------------------
-const allowedOrigins = [
-  "http://localhost:3000", // local frontend
-  "https://your-frontend.netlify.app" // replace with your actual Netlify URL
-];
-
 const allowedOrigins =
   process.env.NODE_ENV === "production"
-    ? ["https://your-frontend.netlify.app"] // replace with your actual Netlify URL
+    ? ["https://your-frontend.netlify.app"] // 🔴 replace with your actual Netlify URL
     : ["http://localhost:3000"];            // local React dev server
 
 app.use(
@@ -51,7 +46,7 @@ try {
   }
 
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(serviceAccount),
   });
 } catch (err) {
   console.error("Firebase Admin initialization error:", err);
@@ -62,7 +57,6 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// Example route
 app.get("/test", (req, res) => {
   res.json({ message: "Backend is connected and working!" });
 });

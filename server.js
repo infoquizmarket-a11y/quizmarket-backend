@@ -31,17 +31,6 @@ app.use(
     credentials: true,
   })
 );
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow curl/postman
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
 
 app.use(express.json());
 

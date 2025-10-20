@@ -1,72 +1,84 @@
 import express from "express";
 import cors from "cors";
-import { initializeApp, cert } from "firebase-admin/app";
-import { getStorage } from "firebase-admin/storage";
+import admin from "firebase-admin";
 import fs from "fs";
 
-// Load your Firebase Admin SDK key
-// ⚠️ Replace with the correct path if you rename the file
-import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
-
 const app = express();
-app.use(cors());
-app.use(express.json({ limit: "10mb" })); // allow base64 uploads
-
-// Initialize Firebase Admin
-initializeApp({
-  credential: cert(serviceAccount),
-  storageBucket: "quizmarketinfo.firebasestorage.app" // your bucket name
-});
-
-const bucket = getStorage().bucket();
-
-// --- Upload Endpoint ---
-app.post("/upload", async (req, res) => {
-  try {
-    const { fileName, fileContentBase64, folder } = req.body;
-    if (!fileName || !fileContentBase64 || !folder) {
-      return res.status(400).json({ success: false, error: "Missing fields" });
-    }
-
-    const buffer = Buffer.from(fileContentBase64, "base64");
-    const file = bucket.file(`${folder}/${fileName}`);
-
-    await file.save(buffer, {
-      metadata: { contentType: "application/pdf" },
-      resumable: false
-    });
-
-    // Generate a signed URL valid until 2030
-    const [url] = await file.getSignedUrl({
-      action: "read",
-      expires: "03-01-2030"
-    });
-
-    res.json({ success: true, url });
-  } catch (err) {
-    console.error("Upload error:", err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// --- Delete Endpoint ---
-app.delete("/delete", async (req, res) => {
-  try {
-    const { filePath } = req.body;
-    if (!filePath) {
-      return res.status(400).json({ success: false, error: "Missing filePath" });
-    }
-
-    const file = bucket.file(filePath);
-    await file.delete();
-
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Delete error:", err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// --- Start Server ---
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+
+// -------------------- CORS Setup --------------------
+const allowedOrigins = [
+  "http://localhost:3000", // local frontend
+  "https://your-frontend.netlify.app" // replace with your actual Netlify URL
+];
+
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? ["https://your-frontend.netlify.app"] // replace with your actual Netlify URL
+    : ["http://localhost:3000"];            // local React dev server
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // allow curl/postman
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow curl/postman
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
+app.use(express.json());
+
+// -------------------- Firebase Admin Setup --------------------
+let serviceAccount;
+
+try {
+  if (fs.existsSync("./serviceAccountKey.json")) {
+    // Local development
+    serviceAccount = JSON.parse(fs.readFileSync("./serviceAccountKey.json", "utf8"));
+    console.log("✅ Using local serviceAccountKey.json");
+  } else if (fs.existsSync("/etc/secrets/serviceAccountKey.json")) {
+    // Render Secret File
+    serviceAccount = JSON.parse(fs.readFileSync("/etc/secrets/serviceAccountKey.json", "utf8"));
+    console.log("✅ Using Render secret file");
+  } else {
+    throw new Error("❌ No serviceAccountKey.json found");
+  }
+
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+} catch (err) {
+  console.error("Firebase Admin initialization error:", err);
+}
+
+// -------------------- Routes --------------------
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+// Example route
+app.get("/test", (req, res) => {
+  res.json({ message: "Backend is connected and working!" });
+});
+
+// -------------------- Start Server --------------------
+app.listen(PORT, () => {
+  console.log(`🚀 Backend running on port ${PORT}`);
+});

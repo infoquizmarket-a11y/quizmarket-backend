@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 // ✅ Cloudinary config
 cloudinary.config({
+console.log("🔐 Cloudinary config loaded");
   cloud_name:process.env."dozaj1xzr",       // 🔁 Replace with your Cloudinary cloud name
   api_key:process.env."591753745942397",             // 🔁 Replace with your Cloudinary API key
   api_secret:process.env."TmHC4vNNBevm77B9KOfbdPApFmU",       // 🔁 Replace with your Cloudinary API secret
@@ -32,7 +33,7 @@ app.post("/upload", memoryUpload.single("pdf"), (req, res) => {
     console.warn("⚠️ No file received");
     return res.status(400).json({ error: "No file uploaded" });
   }
-
+console.log("📥 Received file:", req.file?.originalname);
   const uploadStream = cloudinary.uploader.upload_stream(
     {
       resource_type: "raw",
@@ -51,6 +52,13 @@ app.post("/upload", memoryUpload.single("pdf"), (req, res) => {
   );
 
   streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+});
+process.on("uncaughtException", err => {
+  console.error("💥 Uncaught Exception:", err);
+});
+
+process.on("unhandledRejection", err => {
+  console.error("💥 Unhandled Rejection:", err);
 });
 
 // ✅ Start server

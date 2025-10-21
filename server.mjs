@@ -94,7 +94,8 @@ app.get("/list", async (req, res) => {
     console.error("❌ Failed to fetch Cloudinary resources:", error);
     res.status(500).json({ error: "Failed to load samples", details: error });
   }
-}); // ✅ This closing brace was missing
-});app.listen(PORT, () => {
+});
+
+app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });

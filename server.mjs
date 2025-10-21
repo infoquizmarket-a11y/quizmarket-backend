@@ -88,11 +88,14 @@ app.get("/list", async (req, res) => {
       url: file.secure_url,
     }));
 
+    res.setHeader("Cache-Control", "no-store"); // ✅ Prevent 304
     res.json({ samples });
   } catch (error) {
     console.error("❌ Failed to fetch Cloudinary resources:", error);
     res.status(500).json({ error: "Failed to load samples", details: error });
   }
+});
+
 });app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });

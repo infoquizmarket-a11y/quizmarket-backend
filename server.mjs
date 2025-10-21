@@ -5,7 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 import cors from "cors";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 console.log("🔐 Cloudinary config loaded");
 

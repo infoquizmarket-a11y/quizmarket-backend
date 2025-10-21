@@ -100,6 +100,16 @@ app.get("/list", (req, res) => {
     res.json({ files: files.map(name => ({ name })) });
   });
 });
+app.post("/delete", express.json(), (req, res) => {
+  const { filename } = req.body;
+  if (!filename) return res.status(400).json({ error: "No filename provided" });
+
+  const filePath = path.join("uploads", filename);
+  fs.unlink(filePath, (err) => {
+    if (err) return res.status(500).json({ error: "Failed to delete file" });
+    res.json({ message: "File deleted successfully" });
+  });
+});
 
 // -------------------- Start Server --------------------
 app.listen(PORT, () => {

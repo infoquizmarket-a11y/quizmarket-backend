@@ -7,12 +7,12 @@ import cors from "cors";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ✅ Cloudinary config
-cloudinary.config({
 console.log("🔐 Cloudinary config loaded");
-  cloud_name:process.env."dozaj1xzr",       // 🔁 Replace with your Cloudinary cloud name
-  api_key:process.env."591753745942397",             // 🔁 Replace with your Cloudinary API key
-  api_secret:process.env."TmHC4vNNBevm77B9KOfbdPApFmU",       // 🔁 Replace with your Cloudinary API secret
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 // ✅ Middleware

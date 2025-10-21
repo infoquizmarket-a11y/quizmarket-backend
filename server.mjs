@@ -74,9 +74,25 @@ app.post("/upload", memoryUpload.single("pdf"), (req, res) => {
 });
 
 // ✅ Start server
-app.get("/list", (req, res) => {
-  res.json({ samples: [] }); // Replace with actual data if needed
-});
-app.listen(PORT, () => {
+app.get("/list", async (req, res) => {
+  try {
+    const result = await cloudinary.api.resources({
+      type: "upload",
+      prefix: "quizmarket_pdfs/",
+      resource_type: "raw",
+      max_results: 30,
+    });
+
+    const samples = result.resources.map(file => ({
+      title: file.public_id.replace("quizmarket_pdfs/", ""),
+      url: file.secure_url,
+    }));
+
+    res.json({ samples });
+  } catch (error) {
+    console.error("❌ Failed to fetch Cloudinary resources:", error);
+    res.status(500).json({ error: "Failed to load samples", details: error });
+  }
+});app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });

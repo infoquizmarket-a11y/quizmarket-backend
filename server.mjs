@@ -74,6 +74,9 @@ app.post("/upload", memoryUpload.single("pdf"), (req, res) => {
 });
 
 // ✅ Start server
+app.get("/list", (req, res) => {
+  res.json({ samples: [] }); // Replace with actual data if needed
+});
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });

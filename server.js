@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import admin from "firebase-admin";
-import fs from "fs";
 import multer from "multer";
 import path from "path";
 import fs from "fs";

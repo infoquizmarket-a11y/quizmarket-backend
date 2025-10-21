@@ -13,8 +13,7 @@ cloudinary.v2.config({
   api_secret:"TmHC4vNNBevm77B9KOfbdPApFmU",
 });
 const app = express();
-const PORT = process.env.PORT || 5000;
-
+const PORT = process.env.PORT;
 // -------------------- CORS Setup --------------------
 const allowedOrigins =
   process.env.NODE_ENV === "production"

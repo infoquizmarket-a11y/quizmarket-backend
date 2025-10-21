@@ -9,8 +9,14 @@ const PORT = process.env.PORT || 5000;
 // -------------------- CORS Setup --------------------
 const allowedOrigins =
   process.env.NODE_ENV === "production"
-   ? ["https://quizmarket-frontend.netlify.app"] // 🔴 replace with your actual Netlify URL
-    : ["http://localhost:3000"];            // local React dev server
+    ? [
+        "https://quizmarket.netlify.app",               // ✅ your main website
+        "https://quizmarket-frontend.netlify.app",      // ✅ your React frontend
+        "https://main--quizmarket.netlify.app",         // ✅ Netlify preview (optional)
+        "https://main--quizmarket-frontend.netlify.app" // ✅ Netlify preview (optional)
+      ]
+    : ["http://localhost:3000"];
+
 
 app.use(
   cors({

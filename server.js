@@ -61,6 +61,12 @@ app.get("/test", (req, res) => {
   res.json({ message: "Backend is connected and working!" });
 });
 
+// ➡️ Add this root route to fix "Cannot GET /"
+app.get("/", (req, res) => {
+  res.send("Backend is running 🚀");
+});
+
+
 // -------------------- Start Server --------------------
 app.listen(PORT, () => {
   console.log(`🚀 Backend running on port ${PORT}`);

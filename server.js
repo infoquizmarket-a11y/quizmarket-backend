@@ -15,10 +15,9 @@ const allowedOrigins =
 app.use(
   cors({
     origin: function (origin, callback) {
-console.log("🌐 Incoming origin:", origin);
-      if (!origin) return callback(null, true); // allow curl/postman
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
+      console.log("🌐 Incoming origin:", origin);
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true); // ✅ allow curl, Postman, Netlify, and missing origins
       } else {
         return callback(new Error("Not allowed by CORS"));
       }
@@ -27,7 +26,6 @@ console.log("🌐 Incoming origin:", origin);
     credentials: true,
   })
 );
-
 app.use(express.json());
 
 // -------------------- Firebase Admin Setup --------------------

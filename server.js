@@ -1,17 +1,17 @@
-const express = require("express");
-const multer = require("multer");
-const streamifier = require("streamifier");
-const cloudinary = require("cloudinary").v2;
-const cors = require("cors");
+import express from "express";
+import multer from "multer";
+import streamifier from "streamifier";
+import { v2 as cloudinary } from "cloudinary";
+import cors from "cors";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ✅ Cloudinary config
 cloudinary.config({
-  cloud_name: "dozaj1xzr",       // 🔁 Replace with your Cloudinary cloud name
-  api_key: "591753745942397",             // 🔁 Replace with your Cloudinary API key
-  api_secret: "TmHC4vNNBevm77B9KOfbdPApFmU",       // 🔁 Replace with your Cloudinary API secret
+  cloud_name: "your-cloud-name",       // 🔁 Replace with your Cloudinary cloud name
+  api_key: "your-api-key",             // 🔁 Replace with your Cloudinary API key
+  api_secret: "your-api-secret",       // 🔁 Replace with your Cloudinary API secret
 });
 
 // ✅ Middleware
@@ -35,9 +35,9 @@ app.post("/upload", memoryUpload.single("pdf"), (req, res) => {
 
   const uploadStream = cloudinary.uploader.upload_stream(
     {
-      resource_type: "raw", // PDFs are treated as raw files
-      public_id: req.file.originalname.replace(".pdf", ""), // optional: remove .pdf
-      folder: "quizmarket_pdfs", // optional folder name
+      resource_type: "raw",
+      public_id: req.file.originalname.replace(".pdf", ""),
+      folder: "quizmarket_pdfs",
     },
     (error, result) => {
       if (error) {

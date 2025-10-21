@@ -4,6 +4,14 @@ import admin from "firebase-admin";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import cloudinary from "cloudinary";
+import streamifier from "streamifier";
+
+cloudinary.v2.config({
+  cloud_name:dozaj1xzr,
+  api_key:591753745942397,
+  api_secret:TmHC4vNNBevm77B9KOfbdPApFmU,
+});
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -73,6 +81,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+
 // Serve uploaded files statically
 app.use("/uploads", express.static("uploads"));
 // -------------------- Routes --------------------
@@ -89,11 +98,25 @@ app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
 });
 // -------------------- PDF Upload Routes --------------------
-app.post("/upload", upload.single("pdf"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-  res.json({ message: "PDF uploaded successfully", filename: req.file.filename });
-});
+const memoryUpload = multer(); // in-memory upload
 
+app.post("/upload", memoryUpload.single("pdf"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+  const uploadStream = cloudinary.v2.uploader.upload_stream(
+    {
+      resource_type: "raw", // for PDFs
+      public_id: req.file.originalname.replace(".pdf", ""), // optional: remove .pdf
+      folder: "quizmarket_pdfs", // optional folder name
+    },
+    (error, result) => {
+      if (error) return res.status(500).json({ error: "Upload failed", details: error });
+      res.json({ message: "PDF uploaded successfully", url: result.secure_url });
+    }
+  );
+
+  streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+});
 app.get("/list", (req, res) => {
   fs.readdir("uploads", (err, files) => {
     if (err) return res.status(500).json({ error: "Failed to list files" });

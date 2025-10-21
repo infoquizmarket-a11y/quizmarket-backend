@@ -9,9 +9,9 @@ const PORT = process.env.PORT || 3000;
 
 // ✅ Cloudinary config
 cloudinary.config({
-  cloud_name: "dozaj1xzr",       // 🔁 Replace with your Cloudinary cloud name
-  api_key: "591753745942397",             // 🔁 Replace with your Cloudinary API key
-  api_secret: "TmHC4vNNBevm77B9KOfbdPApFmU",       // 🔁 Replace with your Cloudinary API secret
+  cloud_name:process.env."dozaj1xzr",       // 🔁 Replace with your Cloudinary cloud name
+  api_key:process.env."591753745942397",             // 🔁 Replace with your Cloudinary API key
+  api_secret:process.env."TmHC4vNNBevm77B9KOfbdPApFmU",       // 🔁 Replace with your Cloudinary API secret
 });
 
 // ✅ Middleware

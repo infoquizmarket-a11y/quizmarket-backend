@@ -8,9 +8,9 @@ import cloudinary from "cloudinary";
 import streamifier from "streamifier";
 
 cloudinary.v2.config({
-  cloud_name:dozaj1xzr,
-  api_key:591753745942397,
-  api_secret:TmHC4vNNBevm77B9KOfbdPApFmU,
+  cloud_name:"dozaj1xzr",
+  api_key:"591753745942397",
+  api_secret:"TmHC4vNNBevm77B9KOfbdPApFmU",
 });
 const app = express();
 const PORT = process.env.PORT || 5000;

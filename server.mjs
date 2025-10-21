@@ -58,18 +58,18 @@ app.post("/upload", memoryUpload.single("pdf"), (req, res) => {
       (error, result) => {
         if (error) {
           console.error("❌ Cloudinary upload failed:", error);
-          return res.status(500).json({ error: "Upload failed", details: error });
+         return res.status(500).json({ error: "Upload failed", details: error });
         }
 
         console.log("✅ Cloudinary upload success:", result.secure_url);
-        res.json({ message: "PDF uploaded successfully", url: result.secure_url });
+        res.json({ success: true, message: "PDF uploaded successfully", url: result.secure_url });
       }
     );
 
     streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
   } catch (err) {
     console.error("💥 Streamifier pipe failed:", err);
-    return res.status(500).json({ error: "Stream error", details: err });
+    return res.status(500).json({ success: false, error: "Stream error", details: err });
   }
 });
 

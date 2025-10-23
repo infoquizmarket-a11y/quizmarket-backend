@@ -66,7 +66,7 @@ app.get("/list", async (req, res) => {
   }
 });
 // ✅ Upload route — paste this here
-const upload = multer();
+const upload = multer({ storage: multer.memoryStorage() });
 
 app.post("/upload", upload.single("file"), async (req, res) => {
   try {

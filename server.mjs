@@ -67,8 +67,16 @@ app.get("/list", async (req, res) => {
 });
 // ✅ Upload route — paste this here
 const upload = multer();
+
 app.post("/upload", upload.single("file"), async (req, res) => {
   try {
+    console.log("📥 Incoming file:", req.file);
+
+    if (!req.file) {
+      console.error("❌ No file received in upload");
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
     const stream = cloudinary.uploader.upload_stream(
       {
         resource_type: "raw",
@@ -80,7 +88,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
           console.error("❌ Upload error:", error);
           return res.status(500).json({ error: "Upload failed", details: error });
         }
-        res.status(200).json({ url: result.secure_url });
+        res.status(200).json({ success: true, url: result.secure_url });
       }
     );
 
@@ -90,7 +98,6 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Unexpected error", details: err });
   }
 });
-
 
 // ✅ Start server
 app.listen(PORT, () => {

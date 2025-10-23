@@ -7,6 +7,14 @@ import cors from "cors";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ✅ Cloudinary config (paste your actual credentials or use environment variables)
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "dozaj1xzr",
+  api_key: process.env.CLOUDINARY_API_KEY || "591753745942397",
+  api_secret: process.env.CLOUDINARY_API_SECRET || "TmHC4vNNBevm77B9KOfbdPApFmU",
+});
+
+
 // ✅ Enable CORS for all origins
 app.use(cors());
 app.use(express.json());

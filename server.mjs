@@ -41,22 +41,23 @@ app.get("/list", async (req, res) => {
 
     res.setHeader("Cache-Control", "no-store");
     res.json({ samples });
-  } } catch (error) {
-  console.error("❌ Cloudinary error:", {
-    message: error?.message,
-    name: error?.name,
-    stack: error?.stack,
-    response: error?.response?.data,
-  });
-
-  res.status(500).json({
-    error: "Failed to load samples",
-    details: {
+  } catch (error) {
+    console.error("❌ Cloudinary error:", {
       message: error?.message,
+      name: error?.name,
+      stack: error?.stack,
       response: error?.response?.data,
-    },
-  });
-}
+    });
+
+    res.status(500).json({
+      error: "Failed to load samples",
+      details: {
+        message: error?.message,
+        response: error?.response?.data,
+      },
+    });
+  }
+});
 
 // ✅ Start server
 app.listen(PORT, () => {

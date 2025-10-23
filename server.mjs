@@ -17,7 +17,7 @@ cloudinary.config({
 
 // ✅ Enable CORS for all origins
 app.use(cors());
-app.use(express.json());
+
 
 
 // ✅ Add this root route here
@@ -29,6 +29,13 @@ app.get("/", (req, res) => {
 // ✅ Health check for Render
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
+});
+ 
+// ✅ Handle preflight OPTIONS requests for /list
+app.options("/list", (req, res) => {
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.status(204).end(); // Respond with no content, as expected
 });
 
 // ✅ List route for sample PDFs

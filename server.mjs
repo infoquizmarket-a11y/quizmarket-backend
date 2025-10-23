@@ -9,22 +9,14 @@ const PORT = process.env.PORT || 3000;
 
 // ✅ Enable CORS for all origins
 app.use(cors());
-
-// ✅ Handle preflight requests explicitly
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); // or your Netlify domain
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200); // ✅ Respond to preflight
-  }
-  next();
-});
-
-// ✅ Optional: parse JSON bodies
 app.use(express.json());
 
-// ✅ /list route
+// ✅ Health check for Render
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
+// ✅ List route for sample PDFs
 app.get("/list", async (req, res) => {
   try {
     const result = await cloudinary.api.resources({

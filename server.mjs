@@ -5,7 +5,16 @@ import { v2 as cloudinary } from "cloudinary";
 import cors from "cors";
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
+
+// ✅ Enable CORS for all origins
+app.use(cors());
+
+// ✅ Handle preflight requests
+app.options("*", cors());
+
+// ✅ Optional: parse JSON bodies if needed
+app.use(express.json());
 
 console.log("🔐 Cloudinary config loaded");
 if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {

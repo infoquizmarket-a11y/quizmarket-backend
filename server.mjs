@@ -19,6 +19,13 @@ cloudinary.config({
 app.use(cors());
 app.use(express.json());
 
+
+// ✅ Add this root route here
+app.get("/", (req, res) => {
+  res.send("✅ QuizMarket backend is live!");
+});
+
+
 // ✅ Health check for Render
 app.get("/health", (req, res) => {
   res.status(200).send("OK");

@@ -99,6 +99,10 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
+// ✅ Enable JSON parsing for all other routes
+app.use(express.json());
+
+
 // ✅ Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);

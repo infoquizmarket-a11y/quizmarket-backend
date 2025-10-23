@@ -10,79 +10,21 @@ const PORT = process.env.PORT || 3000;
 // ✅ Enable CORS for all origins
 app.use(cors());
 
-// ✅ Handle preflight requests
-app.options("*", cors());
+// ✅ Handle preflight requests explicitly
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // or your Netlify domain
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200); // ✅ Respond to preflight
+  }
+  next();
+});
 
-// ✅ Optional: parse JSON bodies if needed
+// ✅ Optional: parse JSON bodies
 app.use(express.json());
 
-console.log("🔐 Cloudinary config loaded");
-if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
-  console.error("❌ Missing Cloudinary environment variables");
-  process.exit(1); // Optional: fail fast
-}
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// ✅ Middleware
-app.use(cors());
-app.use(express.json());
-
-// ✅ Health check route for Render (place this BEFORE multer or any upload logic)
-app.get("/health", (req, res) => {
-  console.log("🔁 Render health check pinged");
-  res.status(200).send("🟢 Health check passed");
-});
-
-// ✅ Manual check route (optional)
-app.get("/", (req, res) => {
-  res.send("✅ QuizMarket backend is running");
-});
-
-
-
-// ✅ Multer memory storage
-const memoryUpload = multer({ storage: multer.memoryStorage() });
-
-// ✅ Upload route
-app.post("/upload", memoryUpload.single("pdf"), (req, res) => {
-  if (!req.file) {
-    console.warn("⚠️ No file received");
-    return res.status(400).json({ error: "No file uploaded" });
-  }
-
-  console.log("📥 Received file:", req.file.originalname);
-  console.log("📦 File buffer size:", req.file.buffer?.length);
-
-  try {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        resource_type: "raw",
-        public_id: req.file.originalname.replace(".pdf", ""),
-        folder: "quizmarket_pdfs",
-      },
-      (error, result) => {
-        if (error) {
-          console.error("❌ Cloudinary upload failed:", error);
-         return res.status(500).json({ error: "Upload failed", details: error });
-        }
-
-        console.log("✅ Cloudinary upload success:", result.secure_url);
-        res.json({ success: true, message: "PDF uploaded successfully", url: result.secure_url });
-      }
-    );
-
-    streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
-  } catch (err) {
-    console.error("💥 Streamifier pipe failed:", err);
-    return res.status(500).json({ success: false, error: "Stream error", details: err });
-  }
-});
-
-// ✅ Start server
+// ✅ /list route
 app.get("/list", async (req, res) => {
   try {
     const result = await cloudinary.api.resources({
@@ -97,7 +39,7 @@ app.get("/list", async (req, res) => {
       url: file.secure_url,
     }));
 
-    res.setHeader("Cache-Control", "no-store"); // ✅ Prevent 304
+    res.setHeader("Cache-Control", "no-store");
     res.json({ samples });
   } catch (error) {
     console.error("❌ Failed to fetch Cloudinary resources:", error);
@@ -105,6 +47,7 @@ app.get("/list", async (req, res) => {
   }
 });
 
+// ✅ Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
